@@ -1,0 +1,88 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Blog index{% endblock %}
+
+{% block body %}
+    <h1>Blog index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>TitreBL</th>
+                <th>Auteur</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>Slug</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for blog in blogs %}
+            <tr>
+                <td>{{ blog.id }}</td>
+                <td>{{ blog.titreBL }}</td>
+                <td>{{ blog.auteur }}</td>
+                <td>{{ blog.createdAt ? blog.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ blog.updatedAt ? blog.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ blog.slug }}</td>
+                <td>
+                    <a href="{{ path('app_blog_show', {'id': blog.id}) }}">show</a>
+                    <a href="{{ path('app_blog_edit', {'id': blog.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_blog_new') }}">Create new</a>
+{% endblock %} #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block body %}
+<div class="recent_news_area section__padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="section_title text-center mb-70">
+                    <h3 class="mb-45">Recent Blogs</h3>
+                    <p>Explore the latest updates and articles from university clubs.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% for blog in blogs %}
+                <div class="col-md-6">
+                    <div class="single__news">
+                        <div class="thumb">
+                            <a href="{{ path('app_blog_show', {'id': blog.id}) }}">
+                                <img src="{{ asset('FO/img/news/1.png') }}" alt="{{ blog.titreBL }}">
+                            </a>
+                            <span class="badge">Author: {{ blog.auteur }}</span>
+                        </div>
+                        <div class="news_info">
+                            <a href="{{ path('app_blog_show', {'id': blog.id}) }}">
+                                <h4>{{ blog.titreBL }}</h4>
+                            </a>
+                            <p class="d-flex align-items-center">
+                                <span><i class="flaticon-calendar-1"></i> {{ blog.createdAt ? blog.createdAt|date('Y-m-d') : '' }}</span>
+                                <span><i class="flaticon-comment"></i> Comments: {{ blog.getCommentCount }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p class="text-center">No blogs found.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

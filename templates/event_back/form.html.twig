@@ -1,0 +1,11 @@
+{% extends 'base2.html.twig' %}
+
+{% block body %}
+<div class="container my-5">
+    <h2>{{ 'a'==true ? 'Edit' : 'Add' }} event </h2>
+
+    {{ form(form) }}
+
+    <a href="{{ path('app_back_Event') }}" class="btn btn-secondary mt-3">Revenir a la liste des Categories</a>
+</div>
+{% endblock %}

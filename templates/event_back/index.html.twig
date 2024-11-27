@@ -1,0 +1,53 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Hello EventBackController!{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Manage Event (Books)</h2>
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Books List</h3>
+        <a href="{{path('app_back_Event_ajout')}} " >
+        <button class="btn btn-primary" >
+        Add New Livre
+        </button>
+        </a>
+    </div>
+
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>Image</th>
+                <th>Book Title</th>
+
+                <th>date</th>
+
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example Book Row -->
+            <tr>
+                {% for i in Event %}
+                <td>{{i.nomEV}}</td>
+                <td>{{i.dateEV|date('Y-m-d') }}</td>
+                <td>{{i.lieuEV}}</td>
+                <td>
+                        <span class="text-secondary" style="cursor: pointer;"> 
+                            <a href="{{path('app_back_Event_modif' , {'id' : i.id}) }} " >modif
+                            </a>
+                        </span>
+                        <span class="text-danger ms-3" style="cursor: pointer;" onclick="deleteCategory()"> 
+                        <a href="{{path('app_Eventdashsupp' , {'id' : i.id}) }} " >supp
+                            </a>
+                        </span>
+                </td>
+            </tr>
+                 {%endfor%}
+        </tbody>
+    </table>
+</div>           
+            
+
+{% endblock %}

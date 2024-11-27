@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FrontController!{% endblock %}
+
+{% block body %}
+ <div class="recent_news_area section__padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="section_title text-center mb-70">
+                    <h3 class="mb-45">{{ blog.titreBL }}</h3>
+                    <p>{{ blog.auteur }} | 
+                        <span><i class="flaticon-calendar-1"></i> {{ blog.createdAt ? blog.createdAt|date('d M Y') : 'Date inconnue' }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="single__news">
+                    <div class="thumb">
+                        <a href="#">
+                            <img src="{{ asset('FO/img/news/1.png') }}" alt="{{ blog.titreBL }}">
+                        </a>
+                        <span class="badge">Blog Post</span>
+                    </div>
+                    <div class="news_info">
+                        <h4>{{ blog.titreBL }}</h4>
+                        <p class="d-flex align-items-center">
+                            <span><i class="flaticon-calendar-1"></i> {{ blog.createdAt ? blog.createdAt|date('d M Y') : 'Date inconnue' }}</span> 
+                            <span><i class="flaticon-comment"></i> Aucun commentaire</span>
+                        </p>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            <!-- Vous pouvez remplacer ce texte par un contenu spécifique si nécessaire -->
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <a href="{{ path('app_blog_index') }}" class="btn btn-primary">Retour à la liste</a>
+                <a href="{{ path('app_blog_edit', {'id': blog.id}) }}" class="btn btn-secondary">Modifier</a>
+                {{ include('blog/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

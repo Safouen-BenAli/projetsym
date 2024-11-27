@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container my-5">
+    <h2>{{ 'a'==true ? 'Edit' : 'Add' }} Sponsor </h2>
+
+    {{ form(form) }}
+
+    <a href="{{ path('app_back_Sponsor') }}" class="btn btn-secondary mt-3">Revenir a la liste des Categories</a>
+</div>
+{% endblock %}

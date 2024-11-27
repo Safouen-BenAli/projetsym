@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">{{ event.nomEV }}</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ asset('img/course-3.jpg') }}" class="img-fluid rounded" alt="{{ event.nomEV }}">
+        </div>
+        <div class="col-md-6">
+            <h3>Event Details</h3>
+            <p><strong>Location:</strong> {{ event.lieuEV }}</p>
+            <p><strong>Date:</strong> {{ event.dateEV|date('Y-m-d') }}</p>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h3 class="mb-3">Sponsors</h3>
+    {% if sponsors|length > 0 %}
+        <ul class="list-group">
+            {% for sponsor in sponsors %}
+                <li class="list-group-item">
+                    <strong>Name:</strong> {{ sponsor.nomSP }}<br>
+                    <strong>Contract Amount:</strong> {{ sponsor.montantContrat }}<br>
+                    <strong>Start Date:</strong> {{ sponsor.dateDebutSP|date('Y-m-d') }}<br>
+                    <strong>End Date:</strong> {{ sponsor.dateFinSP|date('Y-m-d') }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No sponsors available for this event.</p>
+    {% endif %}
+
+    <a href="{{ path('app_client_events') }}" class="btn btn-secondary mt-3">Back to Events</a>
+</div>
+{% endblock %}
