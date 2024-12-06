@@ -32,7 +32,7 @@ class EventBackController extends AbstractController
                  //instancier un objet
                  $Event= new Event();
 
-                 $form=$this->createForm(EventType::class,$Event);
+                 $form=$this->createForm(Event::class,$Event);
                  //recuperer les donnees saisies au niveau de formulaire
                  
                  $form->handleRequest($request);
@@ -60,7 +60,7 @@ public function modifliv( $id , EventRepository $rep ,ManagerRegistry $doctrine 
 {
              $Event = $rep->find($id); // You can modify the query to fit your needs
      
-             $form=$this->createForm(EventType::class,$Event);
+             $form=$this->createForm(Event::class,$Event);
              //recuperer les donnees saisies au niveau de formulaire
              
              $form->handleRequest($request);
@@ -81,13 +81,13 @@ public function modifliv( $id , EventRepository $rep ,ManagerRegistry $doctrine 
 ///////////////////////////////////////////////////////
 
 #[Route('/Eventupp/{id}', name: 'app_Eventdashsupp')]
-public function livredashsupp( $id ,  EventRepository $rep, ManagerRegistry $doctrine): Response
+public function eventdashsupp( $id ,  EventRepository $rep, ManagerRegistry $doctrine): Response
 {
     //recupere l auteur a supprimer
-    $livre = $rep->find($id);
+    $Event = $rep->find($id);
     // action de suppression
     $em=$doctrine->getManager();
-    $em->remove($livre);
+    $em->remove($Event);
     //commit au niveau de la BD
     $em->flush();
     return $this->redirectToRoute('app_back_Event');

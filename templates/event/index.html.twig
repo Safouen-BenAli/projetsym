@@ -1,31 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Events{% endblock %}
+{% block title %}Event index{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4 text-center">Events</h1>
+    <h1>Event index</h1>
 
-    <div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>NomEV</th>
+                <th>DateEV</th>
+                <th>LieuEV</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for event in events %}
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <img src="{{ asset('img/course-3.jpg') }}" class="card-img-top" alt="{{ event.nomEV }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ event.nomEV }}</h5>
-                        <p class="card-text">{{ event.lieuEV }}</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                {{ event.dateEV|date('Y-m-d') }}
-                            </small>
-                        </p>
-                        <a href="{{ path('app_client_event_detail', {'id': event.id}) }}" class="btn btn-primary">
-                            View Sponsors
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <tr>
+                <td>{{ event.id }}</td>
+                <td>{{ event.nomEV }}</td>
+                <td>{{ event.dateEV ? event.dateEV|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ event.lieuEV }}</td>
+                <td>
+                    <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
+                    <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
         {% endfor %}
-    </div>
-</div>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_event_new') }}">Create new</a>
 {% endblock %}

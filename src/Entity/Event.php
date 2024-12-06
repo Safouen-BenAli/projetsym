@@ -7,10 +7,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContext;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[ORM\Entity(repositoryClass: EventRepository::class)]
+// Assuming $validator is your ValidatorInterface instance
+$metadata = new ClassMetadata(Event::class);
+
+// Call the validation method manually
+
+
+
+#[ORM\Entity(repositoryClass: EventRepository::class)]  
 class Event
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,8 +32,34 @@ class Event
     #[ORM\Column(length: 255)]
     private ?string $nomEV = null;
 
+    #[Assert\NotBlank(message: "The event date cannot be null.")]
+    #[Assert\GreaterThan("now" , message:"The creation date must be in the future ")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateEV = null;
+
+    /*protected \DateTimeInterface $deliveryDate;*/
+    
+    /*#[Assert\Type(
+        type: \DateTimeInterface::class,
+        message: "The value {{ value }} is not a valid date and time."
+    )]*/
+
+   /* #[Assert\Callback]
+    public function isvalidateEventDate(): void
+    {
+        if ($this->dateEV === null) {
+            return; // Skip validation if no date is set
+        }
+
+        $tomorrow = new \DateTime('tomorrow');
+        $tomorrow->setTime(0, 0);
+
+        if ($this->dateEV < $tomorrow) {
+            message: "The event date cannot be null.";return;
+        }
+    }
+*/
+
 
     #[ORM\Column(length: 255)]
     private ?string $lieuEV = null;
