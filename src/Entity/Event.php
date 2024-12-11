@@ -8,60 +8,40 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Component\Validator\Context\ExecutionContext;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-// Assuming $validator is your ValidatorInterface instance
-$metadata = new ClassMetadata(Event::class);
-
-// Call the validation method manually
-
-
-
-#[ORM\Entity(repositoryClass: EventRepository::class)]  
+#[ORM\Entity(repositoryClass: EventRepository::class)]
+#[Vich\Uploadable] 
 class Event
 {
-    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The event name cannot be null.")]
     private ?string $nomEV = null;
 
+    #[Vich\UploadableField(mapping: 'event_images', fileNameProperty: 'imageName')]
+    #[Assert\File(
+        maxSize: "2M",
+        mimeTypes: ["image/jpeg", "image/png"],
+        mimeTypesMessage: "Please upload a valid image file (JPEG or PNG)."
+    )]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $imageName = null;
+
     #[Assert\NotBlank(message: "The event date cannot be null.")]
-    #[Assert\GreaterThan("now" , message:"The creation date must be in the future ")]
+    #[Assert\GreaterThan("now", message: "The event date must be in the future.")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateEV = null;
 
-    /*protected \DateTimeInterface $deliveryDate;*/
-    
-    /*#[Assert\Type(
-        type: \DateTimeInterface::class,
-        message: "The value {{ value }} is not a valid date and time."
-    )]*/
-
-   /* #[Assert\Callback]
-    public function isvalidateEventDate(): void
-    {
-        if ($this->dateEV === null) {
-            return; // Skip validation if no date is set
-        }
-
-        $tomorrow = new \DateTime('tomorrow');
-        $tomorrow->setTime(0, 0);
-
-        if ($this->dateEV < $tomorrow) {
-            message: "The event date cannot be null.";return;
-        }
-    }
-*/
-
-
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "The event location cannot be null.")]
     private ?string $lieuEV = null;
 
     /**
@@ -69,6 +49,7 @@ class Event
      */
     #[ORM\OneToMany(targetEntity: Sponsor::class, mappedBy: 'NomEV')]
     private Collection $sponsors;
+
 
     public function __construct()
     {
@@ -85,11 +66,36 @@ class Event
         return $this->nomEV;
     }
 
-    public function setNomEV(string $nomEV): static
+    public function setNomEV(string $nomEV): self
     {
         $this->nomEV = $nomEV;
 
         return $this;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+{
+    $this->imageFile = $imageFile;
+
+    if (null !== $imageFile) {
+        // Use a separate property for tracking updates
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+}
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
     }
 
     public function getDateEV(): ?\DateTimeInterface
@@ -97,7 +103,7 @@ class Event
         return $this->dateEV;
     }
 
-    public function setDateEV(\DateTimeInterface $dateEV): static
+    public function setDateEV(\DateTimeInterface $dateEV): self
     {
         $this->dateEV = $dateEV;
 
@@ -109,7 +115,7 @@ class Event
         return $this->lieuEV;
     }
 
-    public function setLieuEV(string $lieuEV): static
+    public function setLieuEV(string $lieuEV): self
     {
         $this->lieuEV = $lieuEV;
 
@@ -124,7 +130,7 @@ class Event
         return $this->sponsors;
     }
 
-    public function addSponsor(Sponsor $sponsor): static
+    public function addSponsor(Sponsor $sponsor): self
     {
         if (!$this->sponsors->contains($sponsor)) {
             $this->sponsors->add($sponsor);
@@ -134,10 +140,9 @@ class Event
         return $this;
     }
 
-    public function removeSponsor(Sponsor $sponsor): static
+    public function removeSponsor(Sponsor $sponsor): self
     {
         if ($this->sponsors->removeElement($sponsor)) {
-            // set the owning side to null (unless already changed)
             if ($sponsor->getNomEV() === $this) {
                 $sponsor->setNomEV(null);
             }
@@ -145,9 +150,14 @@ class Event
 
         return $this;
     }
-    public function __toString(): string
-{
-    return $this->nomEV ?: 'Event';
-}
 
+    public function __toString(): string
+    {
+        return $this->nomEV ?: 'Event';
+    }
+    
+    public function mapAction()
+    {
+        return $this->render('GestGestionBundle:Default:newMap.html.twig');
+    }
 }

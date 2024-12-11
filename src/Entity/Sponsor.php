@@ -30,6 +30,8 @@ class Sponsor
     #[ORM\JoinColumn(onDelete:"CASCADE")]
     private ?Event $NomEV = null;
 
+
+
     public function getId(): ?int
     {
         return $this->id;

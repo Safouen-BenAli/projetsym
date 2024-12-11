@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche d'événements{% endblock %}
+
+{% block body %}
+    <h1>Recherche d'événements</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.id) }}
+        {{ form_row(form.nomEV) }}
+        {{ form_row(form.dateEV) }}
+        {{ form_row(form.lieuEV) }}
+        <button class="btn btn-primary">Rechercher</button>
+    {{ form_end(form) }}
+
+    <h2>Résultats de la recherche</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th>Nom</th>
+                <th>Date</th>
+                <th>Lieu</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+            <tr>
+           
+                <td>{{ event.nomEV }}</td>
+                <td>{{ event.dateEV ? event.dateEV|date('Y-m-d') : 'N/A' }}</td>
+                <td>{{ event.lieuEV }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun événement trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -2,94 +2,109 @@
 
 namespace App\Controller;
 
+use App\Entity\Event;
+use App\Form\Event1Type;
+use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\EventRepository;
-use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
-use App\Form\EventType; 
-use App\Entity\Event;
-class EventBackController extends AbstractController
-{
-    #[Route('/back/office/Event', name: 'app_back_Event')]
-    public function affich(EventRepository $rep): Response
+use App\Form\SearchEventType;
+
+#[Route('/event/back')]
+final class EventBackController extends AbstractController{
+    #[Route(name: 'app_event_back_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, EventRepository $eventRepository): Response
     {
-        
-        $Event = $rep->findAll();
+        // Récupérer le terme de recherche
+        $searchTerm = $request->query->get('search', '');
+    
+        // Filtrer les événements en fonction du terme de recherche
+        if ($searchTerm) {
+            $events = $eventRepository->createQueryBuilder('e')
+                ->where('e.nomEV LIKE :search')
+                ->orWhere('e.lieuEV LIKE :search')
+                ->orWhere('e.dateEV LIKE :search')
+                ->setParameter('search', '%' . $searchTerm . '%')
+                ->getQuery()
+                ->getResult();
+        } else {
+            $events = $eventRepository->findAll();
+        }
+    
         return $this->render('event_back/index.html.twig', [
-            'Event' => $Event,
-
+            'events' => $events,
+            'searchTerm' => $searchTerm,
         ]);
     }
-
-
-
-
-    #[Route('/back/office/Event/ajout', name: 'app_back_Event_ajout')]
-    public function ajout(ManagerRegistry $doctrine , Request $request): Response
+    
+    #[Route('/new', name: 'app_event_back_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-                 //instancier un objet
-                 $Event= new Event();
+        $event = new Event();
+        $form = $this->createForm(Event1Type::class, $event);
+        $form->handleRequest($request);
 
-                 $form=$this->createForm(Event::class,$Event);
-                 //recuperer les donnees saisies au niveau de formulaire
-                 
-                 $form->handleRequest($request);
-                 if($form->isSubmitted())
-                 {
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($event);
+            $entityManager->flush();
 
-                 $em=$doctrine->getManager();
-                 $em->persist($Event);
-                 $em->flush();
-                 return $this->redirectToRoute('app_back_Event');
-                 }
-        return $this->render('event_back/form.html.twig', [
-            'form' => $form->createView(),
+            return $this->redirectToRoute('app_event_back_index', [], Response::HTTP_SEE_OTHER);
+        } else {
+            dump($form->getErrors(true));  // Check the form errors
 
+        }
+
+        return $this->render('event_back/new.html.twig', [
+            'event' => $event,
+            'form' => $form,
         ]);
     }
 
+    #[Route('/{id}', name: 'app_event_back_show', methods: ['GET'])]
+    public function show(Event $event): Response
+    {
+        return $this->render('event_back/show.html.twig', [
+            'event' => $event,
+        ]);
+    }
 
+    #[Route('/{id}/edit', name: 'app_event_back_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Event $event, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(Event1Type::class, $event);
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            if ($event->getImageFile()) {
 
-///////////////////////////////////////
+                $event->setImageFile($event->getImageFile());
+            }
+    
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('app_event_back_index', [], Response::HTTP_SEE_OTHER);
+        }
 
+        return $this->render('event_back/edit.html.twig', [
+            'event' => $event,
+            'form' => $form,
+        ]);
+    }
+    
 
-#[Route('/back/office/Event/{id}', name: 'app_back_Event_modif')]
-public function modifliv( $id , EventRepository $rep ,ManagerRegistry $doctrine , Request $request): Response
-{
-             $Event = $rep->find($id); // You can modify the query to fit your needs
-     
-             $form=$this->createForm(Event::class,$Event);
-             //recuperer les donnees saisies au niveau de formulaire
-             
-             $form->handleRequest($request);
-             if($form->isSubmitted())
-             {
-             $em=$doctrine->getManager();
-             $em->persist($Event);
-             $em->flush();
-             return $this->redirectToRoute('app_back_Event');
-             }
-    return $this->render('event_back/form.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
+    #[Route('/{id}', name: 'app_event_back_delete', methods: ['POST'])]
+    public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($event);
+            $entityManager->flush();
+        }
 
-
-
-///////////////////////////////////////////////////////
-
-#[Route('/Eventupp/{id}', name: 'app_Eventdashsupp')]
-public function eventdashsupp( $id ,  EventRepository $rep, ManagerRegistry $doctrine): Response
-{
-    //recupere l auteur a supprimer
-    $Event = $rep->find($id);
-    // action de suppression
-    $em=$doctrine->getManager();
-    $em->remove($Event);
-    //commit au niveau de la BD
-    $em->flush();
-    return $this->redirectToRoute('app_back_Event');
-}
+        return $this->redirectToRoute('app_event_back_index', [], Response::HTTP_SEE_OTHER);
+    }
+  
+ 
 }

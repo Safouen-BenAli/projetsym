@@ -16,28 +16,34 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
-    //    /**
-    //     * @return Event[] Returns an array of Event objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Event
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Recherche des événements en fonction des critères donnés.
+     *
+     * @param array $criteria
+     * @return Event[]
+     */
+    public function searchEvents(array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('e');
+    
+        if (!empty($criteria['id'])) {
+            $qb->andWhere('e.id = :id')
+               ->setParameter('id', $criteria['id']);
+        }
+        if (!empty($criteria['nomEV'])) {
+            $qb->andWhere('e.nomEV LIKE :nomEV')
+               ->setParameter('nomEV', '%' . $criteria['nomEV'] . '%');
+        }
+        if (!empty($criteria['dateEV'])) {
+            $qb->andWhere('e.dateEV = :dateEV')
+               ->setParameter('dateEV', new \DateTime($criteria['dateEV']));
+        }
+        if (!empty($criteria['lieuEV'])) {
+            $qb->andWhere('e.lieuEV LIKE :lieuEV')
+               ->setParameter('lieuEV', '%' . $criteria['lieuEV'] . '%');
+        }
+    
+        return $qb->getQuery()->getResult();
+    }
+    
 }
