@@ -14,14 +14,31 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/event')]
 final class EventController extends AbstractController{
-    #[Route(name: 'app_event_index', methods: ['GET'])]
-    public function index(EventRepository $eventRepository): Response
-    {
-        return $this->render('event/index.html.twig', [
-            'events' => $eventRepository->findAll(),
-        ]);
+    #[Route(name: 'app_event_index', methods: ['GET', 'POST'])]
+public function index(Request $request, EventRepository $eventRepository): Response
+{
+    $searchTerm = $request->query->get('search', '');
+
+    // Create the query builder for filtering events
+    $queryBuilder = $eventRepository->createQueryBuilder('e');
+    
+    if ($searchTerm) {
+        $queryBuilder
+            ->where('e.nomEV LIKE :search')
+            ->orWhere('e.lieuEV LIKE :search')
+            ->orWhere('e.dateEV LIKE :search')
+            ->setParameter('search', '%' . $searchTerm . '%');
     }
 
+    // Retrieve the filtered events
+    $events = $queryBuilder->getQuery()->getResult();
+
+    // Return the template with the events variable
+    return $this->render('event/index.html.twig', [
+        'events' => $events,  // Pass events here
+        'searchTerm' => $searchTerm,
+    ]);
+}
 
     #[Route('/{id}', name: 'app_event_show', methods: ['GET'])]
     public function show(Event $event): Response
@@ -32,7 +49,7 @@ final class EventController extends AbstractController{
         ]);
     }
 
-    #[Route('/list', name: 'app_event_list', methods: ['GET', 'POST'])]
+    /*#[Route('/list', name: 'app_event_list', methods: ['GET', 'POST'])]
     public function listEvents(Request $request, EntityManagerInterface $em): Response
     {
         // Créer le formulaire de recherche
@@ -70,5 +87,5 @@ final class EventController extends AbstractController{
     public function mapAction()
         {
             return $this->render('GestGestionBundle:Default:newMap.html.twig');
-        }
+        }*/
 }

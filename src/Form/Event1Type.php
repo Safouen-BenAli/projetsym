@@ -73,25 +73,3 @@ class Event1Type extends AbstractType
             ]);
     }
 }
-/*
-class EventSearchType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('query', TextType::class, [
-                'required' => false,
-                'label' => false,
-                'attr' => [
-                'placeholder' => 'Search by name or location',
-                'class' => 'form-control',
-                ],
-            ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([]);
-    }
-}
-*/

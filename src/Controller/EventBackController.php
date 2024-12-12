@@ -6,39 +6,45 @@ use App\Entity\Event;
 use App\Form\Event1Type;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Form\SearchEventType;
 
 #[Route('/event/back')]
-final class EventBackController extends AbstractController{
+final class EventBackController extends AbstractController
+{
     #[Route(name: 'app_event_back_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, EventRepository $eventRepository): Response
+    public function index(Request $request, EventRepository $eventRepository, PaginatorInterface $paginator): Response
     {
-        // Récupérer le terme de recherche
+        // Retrieve the search term from the query parameters
         $searchTerm = $request->query->get('search', '');
-    
-        // Filtrer les événements en fonction du terme de recherche
+
+        // Create the query builder for filtering events
+        $queryBuilder = $eventRepository->createQueryBuilder('e');
+        
         if ($searchTerm) {
-            $events = $eventRepository->createQueryBuilder('e')
+            $queryBuilder
                 ->where('e.nomEV LIKE :search')
                 ->orWhere('e.lieuEV LIKE :search')
                 ->orWhere('e.dateEV LIKE :search')
-                ->setParameter('search', '%' . $searchTerm . '%')
-                ->getQuery()
-                ->getResult();
-        } else {
-            $events = $eventRepository->findAll();
+                ->setParameter('search', '%' . $searchTerm . '%');
         }
-    
+
+        // Paginate the results
+        $pagination = $paginator->paginate(
+            $queryBuilder, // Query or QueryBuilder
+            $request->query->getInt('page', 1), // Current page, defaults to 1
+            4 // Items per page
+        );
+
         return $this->render('event_back/index.html.twig', [
-            'events' => $events,
+            'pagination' => $pagination,
             'searchTerm' => $searchTerm,
         ]);
     }
-    
+
     #[Route('/new', name: 'app_event_back_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -51,9 +57,6 @@ final class EventBackController extends AbstractController{
             $entityManager->flush();
 
             return $this->redirectToRoute('app_event_back_index', [], Response::HTTP_SEE_OTHER);
-        } else {
-            dump($form->getErrors(true));  // Check the form errors
-
         }
 
         return $this->render('event_back/new.html.twig', [
@@ -75,16 +78,14 @@ final class EventBackController extends AbstractController{
     {
         $form = $this->createForm(Event1Type::class, $event);
         $form->handleRequest($request);
-    
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            if ($event->getImageFile()) {
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($event->getImageFile()) {
                 $event->setImageFile($event->getImageFile());
             }
-    
+
             $entityManager->flush();
-    
+
             return $this->redirectToRoute('app_event_back_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -93,18 +94,15 @@ final class EventBackController extends AbstractController{
             'form' => $form,
         ]);
     }
-    
 
     #[Route('/{id}', name: 'app_event_back_delete', methods: ['POST'])]
     public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
             $entityManager->remove($event);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_event_back_index', [], Response::HTTP_SEE_OTHER);
     }
-  
- 
 }

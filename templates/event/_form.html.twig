@@ -1,4 +1,50 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'my-form', 'novalidate': 'novalidate'}}) }}
+    <div class="form-group">
+        {{ form_label(form.titreevent, 'Titre Event', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.titreevent, {'attr': {'class': 'form-control', 'style': 'width: 100%;'}}) }}
+        {% if form_errors(form.titreevent) %}
+            <div class="alert alert-danger mt-2">
+                {{ form_errors(form.titreevent) }}
+            </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.type, 'Type', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.type, {'attr': {'class': 'form-control', 'style': 'width: 100%;'}}) }}
+        {% if form_errors(form.type) %}
+            <div class="alert alert-danger mt-2">
+                {{ form_errors(form.type) }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'style': 'width: 100%;'}}) }}
+        {% if form_errors(form.lieu) %}
+            <div class="alert alert-danger mt-2">
+                {{ form_errors(form.lieu) }}
+            </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.prix, 'Prix', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.prix, {'attr': {'class': 'form-control', 'style': 'width: 100%;'}}) }}
+        {% if form_errors(form.prix) %}
+            <div class="alert alert-danger mt-2">
+                {{ form_errors(form.prix) }}
+            </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.nbMax, 'Nombre Max', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.nbMax, {'attr': {'class': 'form-control', 'style': 'width: 100%;'}}) }}
+        {% if form_errors(form.nbMax) %}
+            <div class="alert alert-danger mt-2">
+                {{ form_errors(form.nbMax) }}
+            </div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

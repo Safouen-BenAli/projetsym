@@ -3,15 +3,42 @@
 {% block title %}New Event{% endblock %}
 
 {% block body %}
-    <h1>Create a New Event</h1>
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h2>Create New Event</h2>
+            </div>
 
-    {{ form_start(form, { 'attr': { 'enctype': 'multipart/form-data' } }) }}
-        {{ form_row(form.nomEV) }}
-        {{ form_row(form.dateEV) }}
-        {{ form_row(form.lieuEV) }}
-        {{ form_row(form.imageFile) }}
-        <button class="btn btn-primary">Save</button>
-    {{ form_end(form) }}
+     <div class="card-body">
+                {{ form_start(form, { 'attr': { 'enctype': 'multipart/form-data' } }) }}
 
-    <a href="{{ path('app_event_back_index') }}">Back to list</a>
+                    <div class="mb-3">
+                        {{ form_label(form.nomEV, 'Event Name') }}
+                        {{ form_widget(form.nomEV, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.dateEV, 'Event Date') }}
+                        {{ form_widget(form.dateEV, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.lieuEV, 'Event Location') }}
+                        {{ form_widget(form.lieuEV, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.imageFile, 'Event Image') }}
+                        {{ form_widget(form.imageFile, { 'attr': { 'class': 'form-control' } }) }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save</button>
+
+                {{ form_end(form) }}
+
+                <a href="{{ path('app_event_back_index') }}" class="btn btn-secondary mt-3">Back to list</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+

@@ -3,28 +3,30 @@
 {% block title %}Event{% endblock %}
 
 {% block body %}
-    <h1>Event</h1>
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">{{ event.nomEV }}</h2>
+            </div>
+            <div class="card-body">
+                <p class="card-text"><strong>Nom évenement:</strong> {{ event.nomEV }}</p>
+                <p class="card-text"><strong>Date:</strong> {{ event.dateEV|date('Y-m-d H:i') }}</p>
+                <p class="card-text"><strong>Location:</strong> {{ event.lieuEV }}</p>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ event.id }}</td>
-            </tr>
-            <tr>
-                <th>NomEV</th>
-                <td>{{ event.nomEV }}</td>
-            </tr>
-            <tr>
-                <th>DateEV</th>
-                <td>{{ event.dateEV ? event.dateEV|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>LieuEV</th>
-                <td>{{ event.lieuEV }}</td>
-            </tr>
-        </tbody>
-    </table>
+                {# Check if the event has an image name and display it #}
+                {% if event.imageName %}
+                    <div class="mb-3">
+                        {# Display the image with proper path #}
+                        <img src="{{ asset('images/event/' ~ event.imageName) }}" alt="{{ event.nomEV }}" class="img-fluid" style="max-height: 300px; object-fit: cover;">
+                    </div>
+                {% else %}
+                    <p>No image available for this event.</p>
+                {% endif %}
 
-    <a href="{{ path('app_event_index') }}">back to list</a>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_event_index') }}" class="btn btn-secondary">Back to list</a>
+    </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -3,19 +3,52 @@
 {% block title %}Event List{% endblock %}
 
 {% block body %}
-<h1>Event List</h1>
+    <h1>Event List</h1>
 
-{{ form_start(searchForm) }}
-    {{ form_row(searchForm.query) }}
-    <button type="submit" class="btn btn-primary">Search</button>
-{{ form_end(searchForm) }}
+    <!-- Formulaire de recherche -->
+    <form method="get" action="{{ path('app_event_list') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Search by name, location, or date" value="{{ app.request.get('query') }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
 
-<ul>
-    {% for event in events %}
-        <li>
-            <strong>{{ event.nomEV }}</strong> - {{ event.lieuEV }} ({{ event.dateEV|date('Y-m-d H:i') }})
-            <a href="{{ path('app_event_show', { id: event.id }) }}">Details</a>
-        </li>
-    {% endfor %}
-</ul>
+    <!-- Table des événements -->
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+            <tr>
+                <td>{{ event.id }}</td>
+                <td>{{ event.nomEV }}</td>
+                <td>{{ event.dateEV ? event.dateEV|date('Y-m-d H:i') : 'No date' }}</td>
+                <td>{{ event.lieuEV }}</td>
+                <td>
+                    {% if event.imageName %}
+                        <img src="{{ asset('uploads/event_images/' ~ event.imageName) }}" alt="{{ event.nomEV }}" width="100">
+                    {% else %}
+                        <span class="text-muted">No image</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('app_event_show', { id: event.id }) }}" class="btn btn-sm btn-info">Show</a>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="text-center">No events found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

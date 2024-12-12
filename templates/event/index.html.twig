@@ -4,7 +4,12 @@
 
 {% block body %}
     <h1>Event index</h1>
-
+    <form method="get" action="{{ path('app_event_index') }}" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search events..." value="{{ searchTerm }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
     <table class="table">
         <thead>
             <tr>
@@ -23,7 +28,14 @@
                 <td>{{ event.dateEV ? event.dateEV|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ event.lieuEV }}</td>
                 <td>
-                    <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
+                    <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-sm btn-primary">Show</a>
+                </td>
+                <td>
+                {% if event.imageName %}
+                        <img src="{{ asset('images/event/' ~ event.imageName) }}" alt="{{ event.nomEV }}" class="img-fluid" style="max-height: 300px; object-fit: cover;">
+                    {% else %}
+                        No Image
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
